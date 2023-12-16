@@ -218,5 +218,5 @@ title, f, color = main(&ARGS&)
 -title "{{title}}"
 -f "{{f}}"
 -color "{{color}}"
--thumb "https://raw.githubusercontent.com/ShadowStride-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -footer "{{ctx.prefix}}clock alltime | 12/16/23 | ShadowsStride"

@@ -54,5 +54,5 @@ prefix = ctx.prefix
 </drac2>
 -title "Someone Needs Help"
 -f "{{main(prefix)}}"
--thumb "https://raw.githubusercontent.com/ShadowStride-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -footer "{{prefix}}clock | Updated 12/16/23 | ShadowsStride"

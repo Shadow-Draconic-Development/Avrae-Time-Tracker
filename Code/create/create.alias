@@ -122,6 +122,6 @@ title, f = main(&ARGS&)
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/ShadowStride-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -f "{{f}}"
 -footer "!clock create [tracker name] | 12/16/23 | ShadowsStride"
