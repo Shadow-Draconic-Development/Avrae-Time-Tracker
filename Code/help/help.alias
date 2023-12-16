@@ -34,5 +34,5 @@ result_string = [
 </drac2>
 -title "You Need Help"
 -f "{{"\n".join(result_string)}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/Data/main.png"
--footer "{{prefix}}clock help | 12/15/23 | ShadowsStride"
+-thumb "https://raw.githubusercontent.com/ShadowStride-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
+-footer "{{prefix}}clock help | 12/16/23 | ShadowsStride"
