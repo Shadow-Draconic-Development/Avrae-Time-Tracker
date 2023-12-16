@@ -19,7 +19,7 @@ def main(prefix: str) -> str:
 
     # Header
     result_string = []
-    result_string.append("Sounds like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.")
+    result_string.append("Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.")
     result_string.append("")
 
     # Help

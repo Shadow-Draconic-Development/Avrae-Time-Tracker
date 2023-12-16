@@ -217,5 +217,5 @@ title, f, color = main(&ARGS&)
 -title "{{title}}"
 -f "{{f}}"
 -color "{{color}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
--footer "{{ctx.prefix}}clock alltime | Updated 12/15/23 | ShadowsStride"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/Data/main.png"
+-footer "{{ctx.prefix}}clock alltime | 12/15/23 | ShadowsStride"

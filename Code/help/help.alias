@@ -11,7 +11,7 @@ prefix = ctx.prefix
 
 
 result_string = [
-    "Sounds like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.", # Header
+    "Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.", # Header
     "",
     f"`{prefix}clock`: Displays a message similar to this.", # Help
     f"`{prefix}clock help`: This subalias",
@@ -34,5 +34,5 @@ result_string = [
 </drac2>
 -title "You Need Help"
 -f "{{"\n".join(result_string)}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
--footer "{{prefix}}clock help | Updated 12/15/23 | ShadowsStride"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/Data/main.png"
+-footer "{{prefix}}clock help | 12/15/23 | ShadowsStride"
