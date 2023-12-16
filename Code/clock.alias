@@ -52,7 +52,7 @@ def main(prefix: str) -> str:
 prefix = ctx.prefix
 
 </drac2>
--title "Someone needs help!"
+-title "Someone Needs Help"
 -f "{{main(prefix)}}"
 -thumb "https://raw.githubusercontent.com/ShadowStride-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -footer "{{prefix}}clock | Updated 12/16/23 | ShadowsStride"
