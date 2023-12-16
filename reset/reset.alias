@@ -28,21 +28,42 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def dictionary_change(result_key: str, all_server_dict: dict, server_id: str) -> str:
+def dictionary_change(result_key: str, all_server_dict: dict, server_id: str) -> tuple(str, list[bool, int, int, int, int, int]):
+    """
+    Resets time dictionary
+    
+    Args;
+        result_key (str): Name of tracker
+        all_server_dict (dict): Clock dictionary
+        server_id (str): Server ID
 
+    Return:
+        str: Tracker name
+        list: Tracker data
+            bool: Active status of tracker
+            int: Epoch time of last tracker change
+            int: Total time in seconds
+            int: Total number of times clocked in
+            int: All-time time in seconds
+            int: All-time number of times clocked in
+    """
+
+    # Legacy check to make alltime stats exist
     if len(all_server_dict[server_id][result_key]) == 4:
         all_server_dict[server_id][result_key].append(all_server_dict[server_id][result_key][2])
         all_server_dict[server_id][result_key](all_server_dict[server_id][result_key][3])
 
+    # Alltime stats are already created
     else:
         pass
 
-    # Create backup uvar
+    # Create backup UVAR
     set_uvar('clock_dict_backup', (copy_dict := dump_json(all_server_dict)))
 
     # Reset values for the tracker
     all_server_dict[server_id][result_key] = [False, 0, 0, 0, all_server_dict[server_id][result_key][4], all_server_dict[server_id][result_key][5]]
 
+    # Update UVAR
     set_uvar('clock_dict', dump_json(all_server_dict))
 
     return result_key, load_json(copy_dict)[server_id][result_key]
@@ -53,7 +74,7 @@ def reset_time(name: str = "dm_time") -> str:
     Resets the tracker
 
     Args:
-        name(str): Name of the tracker
+        name(str): Name of the tracker (Default: dm_time)
 
     Return:
         list[str]: Result
@@ -65,7 +86,7 @@ def reset_time(name: str = "dm_time") -> str:
 
     # If the uvar does not exist
     else:
-        return -1, "UVAR not found!"
+        return None, "UVAR not found!"
     
     # Tries to convert the uvar to a dictionary
     try:
@@ -112,12 +133,12 @@ def reset_time(name: str = "dm_time") -> str:
         return None, "Tracker not found!"
 
 
-def calc_time(time:int) -> str:
+def calc_time(time: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time(int): Time in seconds
+        time (int): Time in seconds
 
     Return:
         (str): Result
@@ -198,7 +219,7 @@ def calc_time(time:int) -> str:
         return "0 Seconds"
    
 
-def main(input_list: list[str]) -> str:
+def main(input_list: list[str]) -> list[bool, int, int, int, int, int]:
     """
     Main program function.
     
@@ -219,7 +240,6 @@ def main(input_list: list[str]) -> str:
 
     # If there was no error
     if name:
-
         if name != "dm_time":
             name = f"`{name}`"
 
@@ -234,20 +254,21 @@ def main(input_list: list[str]) -> str:
             f"**Current All-time clock-ins: {tracker_details[5]}"
             ]
 
-        return f"{ctx.author.display_name}: {name} tracker has been reset", "\n".join(result_list)
+        return f"{name} tracker has been reset", "\n".join(result_list), ""
 
     # If there was an error
     else:
-        return f"{ctx.author.display_name} has encountered an error", tracker_details
+        return f"You Have Been Sneak Attacked by an Error", tracker_details, "#CF142B"
 
 
 # Runs main program
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 left_arrow = "<"
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock reset {{left_arrow}}tracker name> | Updated 10/28/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
+-footer "{{ctx.prefix}}clock reset {{left_arrow}}tracker name> | Updated 12/15/23 | ShadowsStride"
