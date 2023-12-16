@@ -113,6 +113,7 @@ def calc_time(time: int) -> str:
     else:
         return "0 Seconds"
 
+
 def get_trackers() -> list[str]:
     """
     Gets the list of trackers for a player.
