@@ -93,7 +93,7 @@ def get_saved_time(name: str = "dm_time") -> list[str]:
 
     # If there were no matches
     else:
-        return -1, "Tracker not found!"
+        return -1, f"Tracker not found (`{name}`)"
 
 
 def calc_time(time:int) -> str:
@@ -221,22 +221,27 @@ def main(input_list: list[str]) -> str:
             pass
         
         # Construct output list
-        result_list = [f"**Current total time:** {calc_time(data_list[2])}", f"**Current clock-ins:** {data_list[3]}", f"**Time since last clock-{status}:** {calc_time(int(time()) - data_list[1])}"]
+        result_list = [
+            f"**Current total time:** {calc_time(data_list[2])}", 
+            f"**Current clock-ins:** {data_list[3]}", 
+            f"**Time since last clock-{status}:** {calc_time(int(time()) - data_list[1])}"
+            ]
 
-        return f"{ctx.author.display_name}: checks their {tracker_name} tracker", "\n".join(result_list)
+        return f"You Check Your {tracker_name} Tracker", "\n".join(result_list), ""
 
     # If there was an error
     else:
-        return f"{ctx.author.display_name} has encountered an error", data_list
+        return "You Have Been Sneak Attacked by an Error", data_list, "#CF142B"
 
 
 # Runs main program
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 l = "<"
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock log {{l}}tracker name> | Updated 10/26/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
+-footer "{{ctx.prefix}}clock log {{l}}tracker name> | Updated 12/15/23 | ShadowsStride"

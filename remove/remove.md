@@ -1,9 +1,9 @@
-<h1>Remove Subalias<img align="right" src="../image.png" width="100px"></h1>
+<h1>Remove Subalias<img align="right" src="../main.png" width="100px"></h1>
 
 Subalias that removes a tracker on a server.
 
 ## Owner(s):
-- Seth Hartman (ShadowsStride)
+- ShadowsStride
 
 ## Help:
-`!clock remove [tracker name]`
+`clock remove [tracker name]`

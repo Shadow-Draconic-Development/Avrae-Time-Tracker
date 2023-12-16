@@ -1,9 +1,9 @@
-<h1>Create Subalias<img align="right" src="../image.png" width="100px"></h1>
+<h1>Create Subalias<img align="right" src="../main.png" width="100px"></h1>
 
 Subalias that creates a tracker on a server.
 
 ## Owner(s):
-- Seth Hartman (ShadowsStride)
+- ShadowsStride
 
 ## Help:
-`!clock create [tracker name]`
+`clock create [tracker name]`

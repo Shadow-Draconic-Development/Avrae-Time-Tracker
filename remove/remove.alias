@@ -52,105 +52,87 @@ def delete_from_dict(key_result: str, all_server_dict: dict, server_id: str) -> 
     set_uvar('clock_dict', dump_json(all_server_dict))
 
 
-def setup_time(name: str) -> list:
+def main(input_list: list[str]) -> tuple(str, str, str):
     """
-    Function to handle the removal of a tracker.
+    Main program function
     
     Args:
-        name (str): Name of the counter
+        input_list (list[str]): List of user inputs
     
     Return:
-        (list[str]): Results
+        str: Title
+        str: Body content
+        str: Color hex code
     """
+
+    # If there is at least one input
+    if len(input_list) > 0:
+        server_id = str(ctx.guild.id)
+
+    # If there was no input
+    else:
+        return "You Have Been Sneak Attacked by an Error", 'No tracker name given', "#CF142B"
 
     # If the UVAR exists
     if (all_server_test := get_uvar('clock_dict')):
-        pass
+
+        # Tries to convert the uvar to a dictionary
+        try:
+            all_server_dict = load_json(all_server_test)
+
+        except:
+            return "You Have Been Sneak Attacked by an Error", 'Problems loading dictionary', "#CF142B"
 
     # If the UVAR does not exist
     else:
-        return -1, "UVAR not found!\nPlease run `!clock create [tracker name]` or `!clock in`"
+        return "You Have Been Sneak Attacked by an Error", f"UVAR not found\nPlease run `{ctx.prefix}clock create [tracker name]` or `{ctx.prefix}clock in`", "#CF142B"
     
-    # Tries to convert the uvar to a dictionary
-    try:
-        all_server_dict = load_json(all_server_test)
-
-    except:
-        return -1, 'Problems loading dictionary'
-
     # If the server id exists in the uvar, pulls dictionary of all trackers made within the server.
-    if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
+    if (key_result := search_list(server_id, all_server_dict.keys())):
         pass
 
     # If the server id does not exist, throws an error
     else:
-        return -1, "You need to create a tracker on this server before you can remove one"
+        return "You Have Been Sneak Attacked by an Error", "You need to create a tracker on this server before you can remove one", "#CF142B"
 
     # If it finds a tracker
-    if (key_result := search_list(name.lower(), all_server_dict[str(ctx.guild.id)].keys())):
+    if (key_result := search_list(input_list[0].lower(), all_server_dict[server_id].keys())):
 
         # If it only has exactly 1 match, delete tracker
         if len(key_result) == 1:
-            delete_from_dict(key_result[0], all_server_dict, str(ctx.guild.id))
-            return key_result[0], ""
+            delete_from_dict(key_result[0], all_server_dict, server_id)
+            return f"`{key_result[0]}` Tracker Successfully Removed", "", ""
 
         # If multiple matches
         else:
 
             # For each match, if it is not an exact match
             for key in key_result:
-                if name.lower() != dict_key.lower():
+                if input_list[0].lower() != key.lower():
                     pass
 
                 # If it finds an exact match, delete tracker
                 else:
-                    delete_from_dict(key, all_server_dict, str(ctx.guild.id))
-                    return key, ""
+                    delete_from_dict(key, all_server_dict, server_id)
+                    return f"`{key}` Tracker Successfully Removed", "", ""
 
             # If no exact match was made
             key_result.insert(0, "**Multiple trackers found:**")
             
-            return -1, "\n".join(key_result)
+            return "You Have Been Sneak Attacked by an Error", "\n".join(key_result), "#CF142B"
 
     # No matches
     else:
-        return -1, "Tracker not found!"
+        return "You Have Been Sneak Attacked by an Error", f"Tracker not found (`{input_list[0]}`)", "#CF142B"
    
 
-def main(input_list: list[str]) -> str:
-    """
-    Main program function.
-    
-    Args:
-        input_list (list[str]): List of inputs
-    
-    Output:
-        str: Result
-    """
-
-    # If the length of inputs is 0, throws error
-    if len(input_list) == 0:
-        return f"{ctx.author.display_name} has encountered an error", "No tracker name given!"
-
-    # Grabs first input
-    else:
-        name, f = setup_time(input_list[0])
-
-    # If there was no error
-    if name != -1:
-        return f"{ctx.author.display_name}, `{name}` tracker successfully removed", ""
-
-    # If there was an error
-    else:
-        return f"{ctx.author.display_name} has encountered an error", f
-
-
 # Runs main program
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock remove [tracker name] | Updated 10/26/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
+-footer "{{ctx.prefix}}clock remove [tracker name] | Updated 12/15/23 | ShadowsStride"

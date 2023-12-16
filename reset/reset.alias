@@ -86,7 +86,7 @@ def reset_time(name: str = "dm_time") -> str:
 
     # If the uvar does not exist
     else:
-        return None, "UVAR not found!"
+        return None, "UVAR not found"
     
     # Tries to convert the uvar to a dictionary
     try:
@@ -130,7 +130,7 @@ def reset_time(name: str = "dm_time") -> str:
 
     # No matches
     else:
-        return None, "Tracker not found!"
+        return None, f"Tracker not found (`{name}`)"
 
 
 def calc_time(time: int) -> str:

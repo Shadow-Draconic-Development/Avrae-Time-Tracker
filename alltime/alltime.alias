@@ -28,7 +28,7 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time:int) -> str:
+def calc_time(time: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
@@ -202,19 +202,20 @@ def main(input_list: list[str]) -> str:
 
     # If there was no error
     if f != -1:
-        return f"{ctx.author.display_name}: Current time trackers", f
+        return f"{ctx.author.display_name}: Current time trackers", f, ""
 
     # If there was an error
     else:
-        return f"{ctx.author.display_name} encountered an error", error
+        return f"{ctx.author.display_name} encountered an error", error, "#CF142B"
 
 
 # Main program function
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock alltime | Updated 10/26/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
+-footer "{{ctx.prefix}}clock alltime | Updated 12/15/23 | ShadowsStride"

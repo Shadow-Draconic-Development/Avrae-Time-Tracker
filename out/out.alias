@@ -28,106 +28,6 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def get_saved_time(name: str = "dm_time") -> list[str]:
-    """
-    Function that handles getting the time.
-
-    Args:
-        name (str): Name of tracker, default: dm_time
-
-    Return:
-        (list[str]): Results
-    """
-
-    # If the uvar exists
-    if (all_server_test := get_uvar("clock_dict")):
-        pass
-
-    # If the uvar does not exist
-    else:
-        return -1, 'UVAR `clock_dict` does not exist'
-    
-    # Tries to convert the uvar to a dictionary
-    try:
-        all_server_dict = load_json(all_server_test)
-
-    except:
-        return -1, 'Problems loading dictionary'
-
-    # If the server exists
-    if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
-        pass
-
-    # If the server doesn't exist, create an entry (with dm_time)
-    else:
-        return -1, "You need to start the tracker on this server before you can stop one."
-
-    # If there was at least one match
-    if (key_result := search_list(name, all_server_dict[str(ctx.guild.id)].keys())):
-
-        # If there was only one match, return result_list and grab key_name
-        if len(key_result) == 1:
-            return key_result[0], all_server_dict[str(ctx.guild.id)][key_result[0]]
-
-        # If there was more than one match
-        else:
-
-            # Set default
-            result_list = None
-
-            # For each match
-            for key in key_result:
-
-                # If it doesn't exactly match
-                if name.lower() != key.lower():
-                    pass
-
-                # If it does match, return result_list and key
-                else:
-                    return key, all_server_dict[str(ctx.guild.id)][key]
-
-            # If no exact match was made
-            key_result.insert(0, "**Multiple trackers found:**")
-            
-            return -1, "\n".join(key_result)
-
-    # If there were no matches
-    else:
-        return -1, "Tracker not found!"
-
-
-def set_time_uvar(tracker_list: list, tracker_key: str) -> None:
-    """
-    Updates time uvar.
-
-    Args:
-        tracker_list(list): time uvar contents
-        tracker_key (str): Key used for dictionary    
-    """
-
-    err
-
-    # Grabs all_server_dict
-    all_server_dict = load_json(get_uvar("clock_dict"))
-
-    # If tracker has been updated
-    if len(tracker_list) > 4:
-        pass
-
-    # If tracker is old version
-    else:
-        tracker_list.append(0)
-        tracker_list.append(0)
-
-    # Provides an updated tracker list
-    all_server_dict[f"{ctx.guild.id}"][tracker_key] = [False, int(time()), tracker_list[2] - tracker_list[1] + int(time()), tracker_list[3], tracker_list[4] - tracker_list[1] + int(time()), tracker_list[5]]
-
-    # Update dictionary
-    set_uvar("clock_dict", dump_json(all_server_dict))
-
-    return all_server_dict[f"{ctx.guild.id}"][tracker_key][2]
-    
-
 def calc_time(time:int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
@@ -214,64 +114,173 @@ def calc_time(time:int) -> str:
         return "0 Seconds"
 
 
-def main(input_list: list[str]) -> str:
+def set_time_uvar(tracker_list: list[bool, int, int, int, int, int], tracker_name: str, server_id: str) -> int:
     """
-    Main program function.
-    
+    Updates time UVAR and grabs current time
+
     Args:
-        input_list(list[str]): List of inputs
-    
-    Output:
-        str: Result
+        tracker_list (list): Tracker data
+            (bool): Active status of tracker
+            (int): Epoch time of last tracker change
+            (int): Total time in seconds
+            (int): Total number of times clocked in
+            (int): All-time time in seconds
+            (int): All-time number of times clocked in
+        tracker_name (str): Key used for dictionary    
+        server_id (str): Server ID
+
+    Return:
+        int: Time in seconds
     """
 
-    # If the length of inputs is 0, will automatically choose the dm timer
-    if len(input_list) == 0:
-        tracker_name, data_list = get_saved_time()
+    # Grabs all_server_dict
+    all_server_dict = load_json(get_uvar("clock_dict"))
 
-    # Grabs first input.
+    # If tracker has been updated
+    if len(tracker_list) > 4:
+        pass
+
+    # If tracker is old version
     else:
-        tracker_name, data_list = get_saved_time(input_list[0])
+        tracker_list.append(0)
+        tracker_list.append(0)
 
-    # If no error
-    if tracker_name != -1:
+    # Provides an updated tracker list
+    all_server_dict[server_id][tracker_name] = [False, int(time()), tracker_list[2] - tracker_list[1] + int(time()), tracker_list[3], tracker_list[4] - tracker_list[1] + int(time()), tracker_list[5]]
 
-        # If tracker is active
-        if data_list[0]:
-            pass
+    # Update dictionary
+    set_uvar("clock_dict", dump_json(all_server_dict))
 
-        # If tracker is not active
-        else:
-            return f"{ctx.author.display_name} has encountered an error", f"{tracker_name} tracker is not active"
+    return all_server_dict[server_id][tracker_name][2]
 
-        # Updates the time
-        current_time = set_time_uvar(data_list, tracker_name)
 
-        # If default tracker, format
-        if tracker_name == "dm_time":
-            tracker_name = "DM Time"
+def main(input_list: list[str]) -> tuple(str, str, str):
+    """
+    Main program function
 
-        # If not default tracker
-        else:
-            pass
+    Args:
+        input_list (list[str]): List of user inputs
 
-        # Construct output list
-        result_list = [f"**Current total time:** {calc_time(current_time)}", f"**Current clock-ins:** {data_list[3]}", f"**Time since last clock-in:** {calc_time(int(time()) - data_list[1])}"]
+    Return:
+        str: Title
+        str: Body content
+        str: Color hex code
+    """
 
-        return f"{ctx.author.display_name}: {tracker_name} tracker has stopped", "\n".join(result_list)
+    # If there was at least 1 input:
+    if len(input_list) > 0:
+        pass
 
-    # If error
+    # If there were no inputs:
     else:
-        return f"{ctx.author.display_name} has encountered an error", data_list
+        input_list.append("dm_time")
+
+    # Store server id
+    server_id = str(ctx.guild.id)
+
+    # If the uvar exists, load dictionary
+    if (all_server_test := get_uvar("clock_dict")):
+        all_server_dict = load_json(all_server_test)
+
+    # If the uvar does not exist
+    else:
+        return "You Have Been Sneak Attacked by an Error", 'UVAR `clock_dict` does not exist', "#CF142B"
+    
+    # If the server exists
+    if (key_result := search_list(server_id, all_server_dict.keys())):
+        pass
+
+    # If the server does not exist
+    else:
+        return "You Have Been Sneak Attacked by an Error", "You need to start the tracker on this server before you can stop one", "#CF142B"
+
+    # If there was at least one match
+    if (key_result := search_list(input_list[0], all_server_dict[server_id].keys())):
+
+        # If there was only one match
+        if len(key_result) == 1:
+            
+            # If default tracker
+            if key_result[0] == "dm_time":
+                tracker_name = "DM Time"
+
+            # If not default tracker
+            else:
+                tracker_name = key_result[0]
+
+            # If tracker is active, stop tracker, and get current time
+            if (tracker_data := all_server_dict[server_id][key_result[0]])[0]:
+                current_time = set_time_uvar(tracker_data, key_result[0], server_id)
+
+                # Construct output list
+                result_list = [
+                    f"**Current total time:** {calc_time(current_time)}",
+                    f"**Current clock-ins:** {tracker_data[3]}",
+                    f"**Time since last clock-in:** {calc_time(int(time()) - tracker_data[1])}"
+                    ]
+
+                return f"`{tracker_name}` Tracker Has Been Stopped", "\n".join(result_list), ""
+
+            # If tracker is not active
+            else:
+                return "You Have Been Sneak Attacked by an Error", f"`{tracker_name}` tracker is not active", "#CF142B"
+
+        # If there was more than one match
+        else:
+
+            # For each match
+            for key in key_result:
+
+                # If it doesn't exactly match
+                if input_list[0].lower() != key.lower():
+                    pass
+
+                # If it does match, return result_list and key
+                else:
+
+                    # If default tracker
+                    if key == "dm_time":
+                        tracker_name = "DM Time"
+
+                    # If not default tracker
+                    else:
+                        tracker_name = key
+
+                    # If tracker is active, stop tracker, and get current time
+                    if (tracker_data := all_server_dict[server_id][key])[0]:
+                        current_time = set_time_uvar(tracker_data, key, server_id)
+
+                        # Construct output list
+                        result_list = [
+                            f"**Current total time:** {calc_time(current_time)}",
+                            f"**Current clock-ins:** {tracker_data[3]}",
+                            f"**Time since last clock-in:** {calc_time(int(time()) - tracker_data[1])}"
+                            ]
+
+                        return f"`{tracker_name}` Tracker Has Been Stopped", "\n".join(result_list), ""
+
+                    # If tracker is not active
+                    else:
+                        return "You Have Been Sneak Attacked by an Error", f"`{tracker_name}` tracker is not active", "#CF142B"
+
+            # If no exact match was made
+            key_result.insert(0, "**Multiple Trackers Found:**")
+            
+            return "You Have Been Sneak Attacked by an Error", "\n".join(key_result), "#CF142B"
+
+    # If there were no matches
+    else:
+        return "You Have Been Sneak Attacked by an Error", f"Tracker not found (`{input_list[0]}`)", "#CF142B"
 
 
 # Runs main program
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 l = "<"
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock in {{l}}tracker name> | Updated 10/30/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Time-Tracker/main/main.png"
+-footer "{{ctx.prefix}}clock out {{l}}tracker name> | Updated 12/15/23 | ShadowsStride"

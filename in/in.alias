@@ -235,7 +235,7 @@ def main(input_list: list[str]) -> str:
 
         # If the tracker is active
         else:
-            return f"{ctx.author.display_name} has encountered an error", f"{tracker_name} is already active"
+            return "You Have Been Sneak Attacked by an Error", f"{tracker_name} is already active", "#CF142B"
 
         # Updates the time
         set_time_uvar(data_list, tracker_name)
@@ -259,20 +259,21 @@ def main(input_list: list[str]) -> str:
         else:
             pass
 
-        return f"{ctx.author.display_name}: {tracker_name} tracker has started", "\n".join(result_list)
+        return f"{tracker_name} tracker has started", "\n".join(result_list), ""
 
     # If error
     else:
-        return f"{ctx.author.display_name} has encountered an error", data_list
+        return "You Have Been Sneak Attacked by an Error", data_list, "#CF142B"
 
 
 # Runs main program
-title, f = main(&ARGS&)
+title, f, color = main(&ARGS&)
 l = "<"
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
 -f "{{f}}"
--footer "!clock in {{l}}tracker name> | Updated 10/26/23 | ShadowsStride"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
+-footer "{{ctx.prefix}}clock in {{l}}tracker name> | Updated 12/15/23 | ShadowsStride"
