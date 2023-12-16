@@ -1,0 +1,103 @@
+embed
+<drac2>
+# *******************************************************
+# * This work includes material written by Seth Hartman (aka ShadowsStride)
+# * and is licensed under the Creative Commons Attribution 4.0 International 
+# * License available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# *******************************************************
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def get_trackers() -> list[str]:
+    """
+    Gets the list of trackers for a player.
+
+    Return:
+        (list[str]): Result
+    """
+
+    # If the uvar exists
+    if (all_server_test := get_uvar("clock_dict")):
+        pass
+
+    # If the uvar does not exist
+    else:
+        return -1, 'UVAR `clock_dict` does not exist'
+    
+    # Tries to convert the uvar to a dictionary
+    try:
+        all_server_dict = load_json(all_server_test)
+
+    except:
+        return -1, 'Problems loading dictionary'
+
+    # If the server id is in the uvar
+    if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
+
+        # Grabs tracker list, formats default tracker
+        key_list = [key if key != "dm_time" else "DM Time" for key in all_server_dict[key_result[0]].keys()]
+
+        # If there is something in the list
+        if len(key_list) != 0:
+            return "\n".join(key_list), ""
+
+        # If there is not something in the list
+        else:
+            return "None", ""
+
+    # If the server id is not in the uvar
+    else:
+        return 'None', ""
+
+    
+def main(input_list: list[str]) -> str:
+    """
+    Main program function.
+    
+    Args:
+        input_list(list[str]): List of inputs
+    
+    Output:
+        str: Result
+    """
+
+    # Grabs tracker names, if any.
+    f, error = get_trackers()
+
+    # If there was no error
+    if f != -1:
+        return f"{ctx.author.display_name}: Current time trackers", f
+
+    # If there was an error
+    else:
+        return f"{ctx.author.display_name} encountered an error", error
+
+
+title, f = main(&ARGS&)
+
+
+</drac2>
+-title "{{title}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
+-f "{{f}}"
+-footer "!clock list | Updated 10/26/23 | ShadowsStride"

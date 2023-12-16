@@ -1,0 +1,72 @@
+embed
+<drac2>
+# *******************************************************
+# * This work includes material written by Seth Hartman (aka ShadowsStride)
+# * and is licensed under the Creative Commons Attribution 4.0 International 
+# * License available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# *******************************************************
+
+
+def restore_time() -> list[str]:
+    """
+    Restores clock uvar from backup
+    
+    Return:
+        (list[str]): Result
+    """
+
+    # If the uvar exists
+    if (all_server_test := get_uvar("clock_dict")):
+
+        # If the uvar exists
+        if (all_server_test_backup := get_uvar('clock_dict_backup')):
+
+            # Puts the clock_dict_backup into clock_dict
+            set_uvar('clock_dict_backup', all_server_test)
+
+            # Puts the clock_dict into clock_dict_backup
+            set_uvar('clock_dict', all_server_test_backup)
+
+            return 'Clock tracker data restored', ''
+
+        # If the uvar does not exist
+        else:
+            return None, "No backup found"
+
+    # If the uvar does not exist
+    else:
+        return None, "UVAR not found!"
+    
+
+def main(input_list: list[str]) -> str:
+    """
+    Main program function
+
+    Args:
+        input_list (list[str]): List of inputs
+
+    Output:
+        str: Result
+    """
+
+    # Restores old clock
+    title, f = restore_time()
+
+    # No error
+    if title:
+        return f"{ctx.author.display_name}: {title}", ""
+
+    # Error
+    else:
+        return f"{ctx.author.display_name} has encountered an error", f
+
+
+# Runs main program
+title, f = main(&ARGS&)
+
+
+</drac2>
+-title "{{title}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
+-f "{{f}}"
+-footer "!clock restore | Updated 10/16/23 | ShadowsStride"

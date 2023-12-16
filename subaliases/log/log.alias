@@ -1,0 +1,242 @@
+embed
+<drac2>
+# *******************************************************
+# * This work includes material written by Seth Hartman (aka ShadowsStride)
+# * and is licensed under the Creative Commons Attribution 4.0 International 
+# * License available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# *******************************************************
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def get_saved_time(name: str = "dm_time") -> list[str]:
+    """
+    Function that handles getting the time (and making sure things exist).
+
+    Args:
+        name (str): Name of tracker
+
+    Return:
+        (list[str]): Results
+    """
+
+    # If the uvar exists
+    if (all_server_test := get_uvar("clock_dict")):
+        pass
+
+    # If the uvar does not exist
+    else:
+        return -1, 'UVAR `clock_dict` does not exist'
+    
+    # Tries to convert the uvar to a dictionary
+    try:
+        all_server_dict = load_json(all_server_test)
+
+    except:
+        return -1, 'Problems loading dictionary'
+
+    # If the server exists
+    if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
+        pass
+
+    # If the server doesn't exist, create an entry (with dm_time)
+    else:
+        return -1, "You need to start the tracker on this server before you can check the logs."
+
+    # If there was at least one match
+    if (key_result := search_list(name, all_server_dict[str(ctx.guild.id)].keys())):
+
+        # If there was only one match, return result_list and grab key_name
+        if len(key_result) == 1:
+            return key_result[0], all_server_dict[str(ctx.guild.id)][key_result[0]]
+
+        # If there was more than one match
+        else:
+
+            # Set default
+            result_list = None
+
+            # For each match
+            for key in key_result:
+
+                # If it doesn't exactly match
+                if name.lower() != key.lower():
+                    pass
+
+                # If it does match, return result_list and key
+                else:
+                    return key, all_server_dict[str(ctx.guild.id)][key]
+
+            # If no exact match was made
+            key_result.insert(0, "**Multiple trackers found:**")
+            
+            return -1, "\n".join(key_result)
+
+    # If there were no matches
+    else:
+        return -1, "Tracker not found!"
+
+
+def calc_time(time:int) -> str:
+    """
+    Converts seconds into weeks, days, hours, minutes, seconds.
+    
+    Args:
+        time(int): Time in seconds
+
+    Return:
+        (str): Result
+    """
+
+    result_list = []
+
+    # Weeks
+    if (weeks := int(time // 604800)) > 0:
+        if weeks != 1:
+            result_list.append(f"{weeks} weeks")
+        
+        else:
+            result_list.append(f"{weeks} week")
+    
+    else:
+        pass
+
+    # Intermediary calc 1
+    t1 = time % 604800
+
+    # Days
+    if (days := int(t1 // 86400)) > 0:
+        if days != 1:
+            result_list.append(f"{days} days")
+        
+        else:
+            result_list.append(f"{days} day")
+    
+    else:
+        pass
+
+    # Intermediary calc 2
+    t2 = t1 % 86400
+
+    # Hours
+    if (hours := int(t2 // 3600)) > 0:
+        if hours != 1:
+            result_list.append(f"{hours} hours")
+        
+        else:
+            result_list.append(f"{hours} hour")
+    
+    else:
+        pass
+
+    # Intermediary calc 3
+    t3 = t2 % 3600
+
+    # Minutes
+    if (minutes := int(t3 // 60)) > 0:
+        if minutes != 1:
+            result_list.append(f"{minutes} minutes")
+        
+        else:
+            result_list.append(f"{minutes} minute")
+    
+    else:
+        pass
+
+    # Seconds
+    if (seconds := int(t3 % 60)) > 0:
+        if seconds != 1:
+            result_list.append(f"{seconds} seconds")
+        
+        else:
+            result_list.append(f"{seconds} second")
+    
+    else:
+        pass
+
+    # If there is at least time measure
+    if len(result_list) > 0:
+        return ", ".join(result_list)
+
+    # If there are no time measures
+    else:
+        return "0 Seconds"
+
+
+def main(input_list: list[str]) -> str:
+    """
+    Main program function.
+    
+    Args:
+        input_list(list[str]): List of inputs
+    
+    Output:
+        str: Results
+    """
+
+    # If the length of inputs is 0, will automatically choose the dm timer
+    if len(input_list) == 0:
+        tracker_name, data_list = get_saved_time()
+
+    # Grabs first input
+    else:
+        tracker_name, data_list = get_saved_time(input_list[0])
+
+    # If there was no error
+    if tracker_name != -1:
+
+        # If tracker is not active
+        if not data_list[0]:
+            status = "out"
+
+        # If tracker is active
+        else:
+            status = "in"
+
+        # If default tracker, format
+        if tracker_name == "dm_time":
+            tracker_name = "DM Time"
+
+        # If not default tracker
+        else:
+            pass
+        
+        # Construct output list
+        result_list = [f"**Current total time:** {calc_time(data_list[2])}", f"**Current clock-ins:** {data_list[3]}", f"**Time since last clock-{status}:** {calc_time(int(time()) - data_list[1])}"]
+
+        return f"{ctx.author.display_name}: checks their {tracker_name} tracker", "\n".join(result_list)
+
+    # If there was an error
+    else:
+        return f"{ctx.author.display_name} has encountered an error", data_list
+
+
+# Runs main program
+title, f = main(&ARGS&)
+l = "<"
+
+
+</drac2>
+-title "{{title}}"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/clock/image.png"
+-f "{{f}}"
+-footer "!clock log {{l}}tracker name> | Updated 10/26/23 | ShadowsStride"

@@ -1,0 +1,5 @@
+{
+    "example": ["Boolean: Active or not", "Int: Epoch time of start", "Int: Total time in seconds", "Int: Total number of times clocked in", "Int: All-time time in seconds", "Int: All-time number of times clocked in"],
+    "dm_time": [false, 2445234523, 3600, 10, 487465, 28],
+    "coding": [true, 234543545, 3600, 18, 478714, 87]
+}
