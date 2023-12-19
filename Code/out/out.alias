@@ -28,12 +28,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time: int) -> str:
+def calc_time(time_input: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time (int): Time in seconds
+        time_input (int): Time in seconds
 
     Return:
         str: Time string
@@ -54,10 +54,10 @@ def calc_time(time: int) -> str:
     for unit_time, singular_label, plural_label in units:
 
         # Floor division
-        unit_count = int(time // unit_time)
+        unit_count = int(time_input // unit_time)
 
         # Modular division
-        time %= unit_time
+        time_input %= unit_time
 
         # If unit count is not 0, add to result_list with proper label
         if unit_count > 0:
@@ -71,12 +71,15 @@ def calc_time(time: int) -> str:
     return ", ".join(result_list) if result_list != [] else "0 seconds"
 
 
-def clock_out_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple(str, str, str, str):
+def clock_out_dict(uvar_dict: dict, server_id: str, tracker_name: str, time_int: int) -> tuple(str, str, str, str):
     """
     Function to clock out tracker
 
     Args:
-        input_list (list[str]): List of user inputs
+        uvar_dict (dict): Dictionary containing trackers
+        server_id (str): Server ID
+        tracker_name (str): Name of tracker
+        time_int (int): Epoch time
 
     Return:
         str: Title
@@ -97,8 +100,7 @@ def clock_out_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple(
             uvar_dict[server_id][tracker_name].append(0)
             uvar_dict[server_id][tracker_name].append(0)
 
-        # Store current time
-        time_int = int(time())
+        # Store delta time
         time_delta = time_int - uvar_dict[server_id][tracker_name][1]
 
         # Turns off tracker
@@ -119,15 +121,32 @@ def clock_out_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple(
         result_list = [
             f"**Current Time:** {calc_time(uvar_dict[server_id][tracker_name][2])}",
             f"**Current Clock-ins:** {uvar_dict[server_id][tracker_name][3]}",
-            f"**Current All-time time: {calc_time(uvar_dict[server_id][tracker_name][4])}",
-            f"**Current All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}",
+            f"**Current All-time time:** {calc_time(uvar_dict[server_id][tracker_name][4])}",
+            f"**Current All-time clock-ins:** {uvar_dict[server_id][tracker_name][5]}",
             f"**Time Since Clock-in:** {calc_time(time_delta)}"
             ]
+
+        # If tracker is not dm_time
+        if tracker_name != "dm_time":
+            pass
+        
+        # If tracker is dm_time
+        else:
+            tracker_name = "DM Time"
 
         return f"`{tracker_name}` Tracker Has Been Stopped", "\n".join(result_list), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
 
     # If tracker is not active
     else:
+
+        # If tracker is not dm_time
+        if tracker_name != "dm_time":
+            pass
+        
+        # If tracker is dm_time
+        else:
+            tracker_name = "DM Time"
+
         return "You Have Been Sneak Attacked by an Error", f"`{tracker_name}` is not active", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B" 
 
 
@@ -153,9 +172,10 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
     else:
         pass
 
-    # If UVAR exists, load dictionary
+    # If UVAR exists, load dictionary, store current time
     if (uvar_test := get_uvar("clock_dict")):
         uvar_dict = load_json(uvar_test)
+        current_time = int(time())
 
     # If UVAR does not exist
     else:
@@ -163,17 +183,25 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
 
     # If server exists
-    if (server_id := ctx.guild.id) in uvar_dict.keys():
+    if (server_id := str(ctx.guild.id)) in uvar_dict.keys():
 
         # If tracker found
         if (search_result := search_list(input_list[0], uvar_dict[server_id].keys())):
 
             # If exactly one tracker found
             if len(search_result) == 1:
-                return clock_out_dict(uvar_dict, server_id, search_result[0])
+                return clock_out_dict(uvar_dict, server_id, search_result[0], current_time)
 
             # If more than one tracker found
             else:
+
+                # If there is only one active tracker (so that we guess which one we are trying to clock out of)
+                if len((active_list := [tracker for tracker in search_result if uvar_dict[server_id][tracker][0]])) == 1:
+                    return clock_out_dict(uvar_dict, server_id, active_list[0], current_time)
+
+                # If there are no active trackers or multiple active trackers
+                else:
+                    pass
 
                 # Iterate through all trackers
                 for result in search_result:
@@ -184,7 +212,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
                     # If exact match
                     else:
-                        return clock_out_dict(uvar_dict, server_id, result)
+                        return clock_out_dict(uvar_dict, server_id, result, current_time)
 
                 search_result.insert(0, "**Multiple Trackers Found:**")
 
@@ -209,4 +237,4 @@ l = "<"
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{ctx.prefix}}clock out {{l}}tracker name> | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock out {{l}}tracker name> | 12/18/23 | ShadowsStride"

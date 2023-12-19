@@ -10,7 +10,7 @@ embed
 def main(prefix: str) -> str:
     """
     Main program function
-
+    
     Args:
         prefix (str): Server prefix
 
@@ -19,27 +19,31 @@ def main(prefix: str) -> str:
     """
 
     return "\n".join([
-        "Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.", # Header
-        "",
-        f"`{prefix}clock`: Displays a message similar to this.", # Help
-        f"`{prefix}clock help`: This subalias",
-        "",
-        f"`{prefix}clock create [tracker name]`: Creates a tracker", # Create/remove
-        f"`{prefix}clock remove [tracker name]`: Removes a tracker",
-        "",
-        f"`{prefix}clock in <tracker name>`: Clocks into a tracker, uses dm_time by default", # In/out
-        f"`{prefix}clock out <tracker name>`: Clocks out of a tracker, uses dm_time by default",
-        "",
-        f"`{prefix}clock list`: Lists out names of trackers", # List/log
-        f"`{prefix}clock log <tracker name>`: Shows time on tracker, uses dm_time by default",
-        f"`{prefix}clock alltime`: Lists out the all-times of trackers",
-        "",
-        f"`{prefix}clock reset <tracker name>`: Resets time on tracker, uses dm_time be default", # Reset/restore
-        f"`{prefix}clock restore`: Restores the tracker dictionary from when you last ran `{prefix}clock remove`, `{prefix}clock reset`, or `{prefix}clock restore` (global)"
+        # Header
+        result_string.append("Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server."),
+        result_string.append(""),
+
+        # Create/remove
+        result_string.append(f"`{prefix}clock`: Displays a message similar to this"),
+        result_string.append(f"`{prefix}clock help`: This alias"),
+        result_string.append(""),
+
+        # In/out
+        result_string.append(f"`{prefix}clock in <tracker name>`: Clocks into a tracker, uses dm_time by default"),
+        result_string.append(f"`{prefix}clock out <tracker name>`: Clocks out of a tracker, uses dm_time by default"),
+        result_string.append(""),
+
+        # List/log
+        result_string.append(f"`{prefix}clock list`: Lists out names of trackers"),
+        result_string.append(f"`{prefix}clock log <#/tracker name>`: Shows all stats on tracker, uses dm_time by default"),
+        result_string.append(""),
+
+        result_string.append(f"`{prefix}clock reset <tracker name>`: Resets time on tracker, uses dm_time be default"),
+        result_string.append(f"`{prefix}clock restore`: Restores the tracker dictionary from when you last ran `{prefix}clock remove`, `{prefix}clock reset`, or `{prefix}clock restore` (global)")
     ])
 
 
-# Load server prefix
+# Server prefix
 prefix = ctx.prefix
 
 
@@ -47,4 +51,4 @@ prefix = ctx.prefix
 -title "Someone Needs Help"
 -f "{{main(prefix)}}"
 -thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
--footer "{{prefix}}clock help | 12/16/23 | ShadowsStride"
+-footer "{{prefix}}clock help | Updated 12/18/23 | ShadowsStride"

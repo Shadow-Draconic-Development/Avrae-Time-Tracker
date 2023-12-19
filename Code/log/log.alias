@@ -28,12 +28,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time: int) -> str:
+def calc_time(time_input: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time (int): Time in seconds
+        time_input (int): Time in seconds
 
     Return:
         str: Time string
@@ -54,10 +54,10 @@ def calc_time(time: int) -> str:
     for unit_time, singular_label, plural_label in units:
 
         # Floor division
-        unit_count = int(time // unit_time)
+        unit_count = int(time_input // unit_time)
 
         # Modular division
-        time %= unit_time
+        time_input %= unit_time
 
         # If unit count is not 0, add to result_list with proper label
         if unit_count > 0:
@@ -71,63 +71,133 @@ def calc_time(time: int) -> str:
     return ", ".join(result_list) if result_list != [] else "0 seconds"
 
 
-def check_log(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple(str, str, str, str):
+def construct_output(uvar_dict: dict, server_id: str, user_input: str|int, add_message: str = None) -> tuple(str, str, str, str):
     """
-    Function to check out log for tracker
+    Function that constructs output
 
     Args:
-        input_list (list[str]): List of user inputs
-
+        uvar_dict (dict): User dictionary
+        server_id (str): Server ID
+        user_input (str|int): Tracker name/page number
+    
     Return:
         str: Title
         str: Body content
         str: Thumbnail URL
         str: Color hex code
     """
+    
+
+    # Gets copy of name list and length
+    tracker_name_list = list(uvar_dict[server_id].keys())
+    tracker_length = len(tracker_name_list)
+
+    # Sorts list
+    tracker_name_list.sort()
+
+    # If input was a tracker name
+    if typeof(user_input) == "str":
+
+        # Look up page_number
+        page_num = tracker_name_list.index(user_input) + 1
+
+        # If not default DM list
+        if user_input != "dm_time":
+            tracker_name = user_input
+
+        # If default DM list
+        else:
+            tracker_name = "DM Time"
+
+    # If input was a page number
+    else:
+        match user_input:
+
+            # If number above page number
+            case c if user_input > tracker_length:
+                page_num = tracker_length
+
+            # If number below 1
+            case c if user_input < 1:
+                page_num = 1
+
+            # If number within bounds
+            case _:
+                page_num = user_input
+
+        # # Set user and tracker input
+        user_input = tracker_name_list[page_num - 1]
+        tracker_name = user_input
+
+    # Time delta
+    time_delta = int(time()) - uvar_dict[server_id][user_input][1]
 
     # If tracker is active
-    if uvar_dict[server_id][tracker_name][0]:
-        f_status = "in"
-        time_delta = int(time()) - uvar_dict[server_id][tracker_name][1]
+    if uvar_dict[server_id][user_input][0]:
+        actual_change = time_delta
+        f_status_string = f"**Time Since Clock-in:** {calc_time(time_delta)}"
 
-    # If tracker is not active
+    # If tracker is inactive
     else:
-        f_status = "out"
-        time_delta = 0
+        actual_change = 0
+
+        # If time is not zero
+        if uvar_dict[server_id][user_input][2] != 0:
+            f_status_string = f"**Time Since Clock-out:** {calc_time(time_delta)}"
+
+        # If time is zero
+        else:
+            f_status_string = f"**Time Since Creation/Reset:** {calc_time(time_delta)}"
+
+            
 
     # Construct output
     result_list = [
-        f"**Current Time:** {calc_time(uvar_dict[server_id][tracker_name][2] + time_delta)}",
-        f"**Current Clock-ins:** {uvar_dict[server_id][tracker_name][3]}",
-        f"**Current All-time time: {calc_time(uvar_dict[server_id][tracker_name][4] + time_delta)}",
-        f"**Current All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}",
-        f"**Time Since Clock-{f_status}:** {calc_time(time_delta)}"
-        ]
+        f"**Page {page_num}/{tracker_length}**",
+        "",
+        f"**Current Time:** {calc_time(uvar_dict[server_id][user_input][2] + actual_change)}",
+        f"**Current Clock-ins:** {uvar_dict[server_id][user_input][3]}",
+        f"**Current All-time time:** {calc_time(uvar_dict[server_id][user_input][4] + actual_change)}",
+        f"**Current All-time clock-ins:** {uvar_dict[server_id][user_input][5]}",
+        f_status_string
+    ]
 
-    return f"`{tracker_name}` Tracker Log", "\n".join(result_list), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
+    # If error occured
+    if add_message:
+        result_list.insert(0, add_message + "\n")
+        color = "#CF142B"
+        thumb = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png"
 
-
-def main(input_list: list[str]) -> tuple(str, str, str, str):
-    """
-    Main program function
-
-    Args:
-        input_list (list[str]): List of user inputs
-
-    Return:
-        str: Title
-        str: Body content
-        str: Thumbnail URL
-        str: Color hex code
-    """
-
-    # If no inputs were given, default to dm_time
-    if len(input_list) == 0:
-        input_list.append("dm_time")
-
-    # If inputs were given
+    # If error did not occur
     else:
+        color = ""
+        thumb = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
+
+    return f"`{tracker_name}` Tracker Time Log", "\n".join(result_list), thumb, color
+
+    title, f, thumb, color
+
+
+def main(input_list: list[str]) -> str:
+    """
+    Main program function.
+    
+    Args:
+        input_list(list[str]): List of inputs
+    
+    Output:
+        str: Result
+    """
+
+    server_id = str(ctx.guild.id)
+
+    # If there is at least one input
+    if len(input_list) > 0:
         pass
+
+    # If there is no input
+    else:
+        input_list.append("dm_time")
 
     # If UVAR exists, load dictionary
     if (uvar_test := get_uvar("clock_dict")):
@@ -135,47 +205,63 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
     # If UVAR does not exist
     else:
-        return "You Have Been Sneak Attacked by an Error", "`clock_dict` UVAR does not exist", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
+        uvar_dict = {
+            server_id: {
+                "dm_time": [False, int(time()), 0, 0, 0, 0]
+            }
+        }
 
-
+        return construct_output(uvar_dict, server_id, "dm_time", "`clock_dict` UVAR did not exist\nUVAR created")
+    
     # If server exists
-    if (server_id := ctx.guild.id) in uvar_dict.keys():
+    if server_id in uvar_dict.keys():
 
-        # If tracker found
-        if (search_result := search_list(input_list[0], uvar_dict[server_id].keys())):
+        # If number was given
+        try:
+            return construct_output(uvar_dict, server_id, int(input_list[0]))
 
-            # If exactly one tracker found
-            if len(search_result) == 1:
-                return check_log(uvar_dict, server_id, search_result[0])
+        # If name was given
+        except:
 
-            # If more than one tracker found
+            # If there is at least one match
+            if (result_list := search_list(input_list[0], uvar_dict[server_id])):
+
+                # If there is exactly one match
+                if len(result_list) == 1:
+                    return construct_output(uvar_dict, server_id, result_list[0])
+
+                # If there is more than one match
+                else:
+
+                    # For each match
+                    for result in result_list:
+
+                        # If it does not exactly match input
+                        if result.lower() != input_list[0].lower():
+                            pass
+
+                        # If it exactly matches input
+                        else:
+                            return construct_output(uvar_dict, server_id, result)
+
+                    result_list.insert(0, "**Multiple Trackers Found:**")
+
+                    return construct_output(uvar_dict, server_id, "dm_time", "\n".join(result_list))
+
+            # If no matches were found
             else:
-
-                # Iterate through all trackers
-                for result in search_result:
-
-                    # If not exact match
-                    if result.lower() != input_list[0].lower():
-                        pass
-
-                    # If exact match
-                    else:
-                        return check_log(uvar_dict, server_id, result)
-
-                search_result.insert(0, "**Multiple Trackers Found:**")
-
-                return "You Have Been Sneak Attacked by an Error", "\n".join(search_result), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
-
-        # If tracker not found
-        else:
-            return "You Have Been Sneak Attacked by an Error", f"Tracker not found (`{input_list[0]}`)", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B" 
-
+                return construct_output(uvar_dict, server_id, "dm_time", f"`{input_list[0]}` tracker not found")
+    
     # If server does not exist
     else:
-        return "You Have Been Sneak Attacked by an Error", "You must first create a time tracker on this server", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", "#CF142B"
+        uvar_dict[server_id] = {
+            "dm_time": [False, int(time()), 0, 0, 0, 0]
+        }
+
+        return construct_output(uvar_dict, server_id, "dm_time", "Server entry not found\nServer entry created")
 
 
-# Runs main program
+# Main program function
 title, f, thumb, color = main(&ARGS&)
 l = "<"
 
@@ -185,4 +271,4 @@ l = "<"
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{ctx.prefix}}clock log {{l}}tracker name> | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock log {{l}}#/tracker name> | 12/18/23 | ShadowsStride"

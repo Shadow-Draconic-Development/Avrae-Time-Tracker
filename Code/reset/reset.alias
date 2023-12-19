@@ -28,12 +28,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time: int) -> str:
+def calc_time(time_input: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time (int): Time in seconds
+        time_input (int): Time in seconds
 
     Return:
         str: Time string
@@ -54,10 +54,10 @@ def calc_time(time: int) -> str:
     for unit_time, singular_label, plural_label in units:
 
         # Floor division
-        unit_count = int(time // unit_time)
+        unit_count = int(time_input // unit_time)
 
         # Modular division
-        time %= unit_time
+        time_input %= unit_time
 
         # If unit count is not 0, add to result_list with proper label
         if unit_count > 0:
@@ -101,20 +101,20 @@ def reset_time_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple
     final_clock_in = uvar_dict[server_id][tracker_name][3]
 
     # Create/update backup UVAR
-    set_uvar('clock_dict_backup', uvar_dict)
+    set_uvar('clock_dict_backup', dump_json(uvar_dict))
 
     # Reset values
-    uvar_dict[server_id][tracker_name] = [False, 0, 0, 0, uvar_dict[server_id][tracker_name][4], uvar_dict[server_id][tracker_name][5]]
+    uvar_dict[server_id][tracker_name] = [False, int(time()), 0, 0, uvar_dict[server_id][tracker_name][4], uvar_dict[server_id][tracker_name][5]]
 
     # Update UVAR
-    set_uvar('clock_dict', uvar_dict)
+    set_uvar('clock_dict', dump_json(uvar_dict))
 
     # Construct output
     result_list = [
         f"**Final time:** {calc_time(final_time)}",
         f"**Final clock-ins:** {final_clock_in}",
-        f"**Current All-time time: {calc_time(uvar_dict[server_id][tracker_name][4])}",
-        f"**Current All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}"
+        f"**Current All-time time:** {calc_time(uvar_dict[server_id][tracker_name][4])}",
+        f"**Current All-time clock-ins:** {uvar_dict[server_id][tracker_name][5]}"
         ]
 
     # If tracker name is dm_time
@@ -160,7 +160,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
 
     # If server exists
-    if (server_id := ctx.guild.id) in uvar_dict.keys():
+    if (server_id := str(ctx.guild.id)) in uvar_dict.keys():
 
         # If tracker found
         if (search_result := search_list(input_list[0], uvar_dict[server_id].keys())):
@@ -206,4 +206,4 @@ left_arrow = "<"
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{ctx.prefix}}clock reset {{left_arrow}}tracker name> | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock reset {{left_arrow}}tracker name> | 12/19/23 | ShadowsStride"

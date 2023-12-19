@@ -64,11 +64,11 @@ def main() -> tuple(str, str, str, str):
 
             # If active
             if uvar_dict[server_id][tracker][0]:
-                tracker_list.append(f"{tracker_name}: **Active**\n")
+                tracker_list.append(f"`{tracker_name}`: **Active**\n")
 
             # If inactive
             else:
-                tracker_list.append(f"{tracker_name}: **Inactive**\n")
+                tracker_list.append(f"`{tracker_name}`: **Inactive**\n")
 
         # If at least 1 tracker was added
         if len(tracker_list) > 0:
@@ -85,7 +85,7 @@ def main() -> tuple(str, str, str, str):
         return "Current Time Trackers", "None (No trackers have been created on this server)", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
 
 
-title, f, thumb, color = main(&ARGS&)
+title, f, thumb, color = main()
 
 
 </drac2>
@@ -93,4 +93,4 @@ title, f, thumb, color = main(&ARGS&)
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{ctx.prefix}}clock list | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock list | 12/19/23 | ShadowsStride"

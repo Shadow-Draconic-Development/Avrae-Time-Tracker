@@ -6,6 +6,7 @@ embed
 # * License available at https://creativecommons.org/licenses/by/4.0/legalcode.
 # ********************************************************
 
+
 def main(prefix: str) -> str:
     """
     Main program function
@@ -17,42 +18,37 @@ def main(prefix: str) -> str:
         str: Help menu
     """
 
-    # Header
-    result_string = []
-    result_string.append("Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server.")
-    result_string.append("")
+    return "\n".join([
+        # Header
+        result_string.append("Looks like you need someone to provide the help action. Here is a list of the subaliases used for this library.\n**Note:** Unless specified as global, commands only work for trackers that were made on this server."),
+        result_string.append(""),
 
-    # Help
-    result_string.append(f"`{prefix}clock`: This alias")
-    result_string.append(f"`{prefix}clock help`: Displays a message similar to this.")
-    result_string.append("")
+        # Create/remove
+        result_string.append(f"`{prefix}clock`: This alias"),
+        result_string.append(f"`{prefix}clock help`: Displays a message similar to this"),
+        result_string.append(""),
 
-    # Create/remove
-    result_string.append(f"`{prefix}!clock create [tracker name]`: Creates a tracker")
-    result_string.append(f"`{prefix}clock remove [tracker name]`: Removes a tracker")
-    result_string.append("")
+        # In/out
+        result_string.append(f"`{prefix}clock in <tracker name>`: Clocks into a tracker, uses dm_time by default"),
+        result_string.append(f"`{prefix}clock out <tracker name>`: Clocks out of a tracker, uses dm_time by default"),
+        result_string.append(""),
 
-    # In/out
-    result_string.append(f"`{prefix}clock in <tracker name>`: Clocks into a tracker, uses DM Time by default")
-    result_string.append(f"`{prefix}clock out <tracker name>`: Clocks out of a tracker, uses DM Time by default")
-    result_string.append("")
+        # List/log
+        result_string.append(f"`{prefix}clock list`: Lists out names of trackers"),
+        result_string.append(f"`{prefix}clock log <#/tracker name>`: Shows all stats on tracker, uses dm_time by default"),
+        result_string.append(""),
 
-    # List/log
-    result_string.append(f"`{prefix}clock list`: Lists out names of trackers")
-    result_string.append(f"`{prefix}clock log <tracker name>`: Shows time on tracker, uses DM Time by default")
-    result_string.append("")
+        result_string.append(f"`{prefix}clock reset <tracker name>`: Resets time on tracker, uses dm_time be default"),
+        result_string.append(f"`{prefix}clock restore`: Restores the tracker dictionary from when you last ran `{prefix}clock remove`, `{prefix}clock reset`, or `{prefix}clock restore` (global)")
+    ])
 
-    # Reset/restore
-    result_string.append(f"`{prefix}clock reset <tracker name>`: Resets time on tracker, uses DM Time be default")
-    result_string.append(f"`{prefix}clock restore`: Restores the tracker dictionary from when you last ran `{prefix}clock remove`, `{prefix}clock reset`, or `{prefix}clock restore` (global)")
-
-    return "\n".join(result_string)
 
 # Server prefix
 prefix = ctx.prefix
+
 
 </drac2>
 -title "Someone Needs Help"
 -f "{{main(prefix)}}"
 -thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
--footer "{{prefix}}clock | Updated 12/16/23 | ShadowsStride"
+-footer "{{prefix}}clock | Updated 12/18/23 | ShadowsStride"

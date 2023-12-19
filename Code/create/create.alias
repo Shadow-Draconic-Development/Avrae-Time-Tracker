@@ -42,8 +42,10 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
         str: Color hex code
     """
 
+    current_time = int(time())
+
     # Store server ID
-    server_id = ctx.guild.id
+    server_id = str(ctx.guild.id)
 
     # If there was at least one input
     if len(input_list) > 0:
@@ -56,7 +58,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
         else:
             uvar_dict = {
                 server_id: {
-                    "dm_time": [False, 0, 0, 0, 0, 0]
+                    "dm_time": [False, current_time, 0, 0, 0, 0]
                 }
             }
 
@@ -70,7 +72,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
     # If server does not exist
     else:
-        uvar_dict[server_id] = {"dm_time": [False, 0, 0, 0, 0, 0]}
+        uvar_dict[server_id] = {"dm_time": [False, current_time, 0, 0, 0, 0]}
 
     # For each tracker (within a server)
     for tracker in uvar_dict[server_id].keys():
@@ -84,7 +86,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
             return "You Have Been Sneak Attacked by an Error", f"`{tracker}` tracker already exists", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
 
     # Creates new tracker
-    uvar_dict[server_id][input_list[0]] = [False, 0, 0, 0, 0, 0]
+    uvar_dict[server_id][input_list[0]] = [False, current_time, 0, 0, 0, 0]
     
     # Save UVAR
     set_uvar('clock_dict', dump_json(uvar_dict))
@@ -101,4 +103,4 @@ title, f, thumb, color = main(&ARGS&)
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "!clock create [tracker name] | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock create [tracker name] | 12/19/23 | ShadowsStride"

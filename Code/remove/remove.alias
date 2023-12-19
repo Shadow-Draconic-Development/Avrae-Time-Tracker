@@ -28,12 +28,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time: int) -> str:
+def calc_time(time_input: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time (int): Time in seconds
+        time_input (int): Time in seconds
 
     Return:
         str: Time string
@@ -54,10 +54,10 @@ def calc_time(time: int) -> str:
     for unit_time, singular_label, plural_label in units:
 
         # Floor division
-        unit_count = int(time // unit_time)
+        unit_count = int(time_input // unit_time)
 
         # Modular division
-        time %= unit_time
+        time_input %= unit_time
 
         # If unit count is not 0, add to result_list with proper label
         if unit_count > 0:
@@ -95,8 +95,8 @@ def delete_from_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tupl
     result_list = [
         f"**Final Time:** {calc_time(uvar_dict[server_id][tracker_name][2])}",
         f"**Final Clock-ins:** {uvar_dict[server_id][tracker_name][3]}",
-        f"**Final All-time time: {calc_time(uvar_dict[server_id][tracker_name][4])}",
-        f"**Final All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}"
+        f"**Final All-time time:** {calc_time(uvar_dict[server_id][tracker_name][4])}",
+        f"**Final All-time clock-ins:** {uvar_dict[server_id][tracker_name][5]}"
         ]
 
     # Setup backup_dict
@@ -139,7 +139,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str):
 
     # If there was no input
     else:
-        return "You Have Been Sneak Attacked by an Error", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "No tracker name given", "#CF142B"
+        return "You Have Been Sneak Attacked by an Error", "No tracker name given", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
 
     if (uvar_test := get_uvar('clock_dict')):
         uvar_dict = load_json(uvar_test)
@@ -193,4 +193,4 @@ title, f, thumb, color = main(&ARGS&)
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{ctx.prefix}}clock remove [tracker name] | 12/16/23 | ShadowsStride"
+-footer "{{ctx.prefix}}clock remove [tracker name] | 12/19/23 | ShadowsStride"

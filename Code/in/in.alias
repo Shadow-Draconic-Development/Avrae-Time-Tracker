@@ -28,12 +28,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def calc_time(time: int) -> str:
+def calc_time(time_input: int) -> str:
     """
     Converts seconds into weeks, days, hours, minutes, seconds.
     
     Args:
-        time (int): Time in seconds
+        time_input (int): Time in seconds
 
     Return:
         str: Time string
@@ -54,10 +54,10 @@ def calc_time(time: int) -> str:
     for unit_time, singular_label, plural_label in units:
 
         # Floor division
-        unit_count = int(time // unit_time)
+        unit_count = int(time_input // unit_time)
 
         # Modular division
-        time %= unit_time
+        time_input %= unit_time
 
         # If unit count is not 0, add to result_list with proper label
         if unit_count > 0:
@@ -84,7 +84,7 @@ def clock_in_dict(uvar_dict: dict, server_id: str, tracker_name: str, current_ti
         str: Thumbnail URL
         str: Color hex code
     """
-
+    
     # If tracker is inactive
     if not uvar_dict[server_id][tracker_name][0]:
 
@@ -117,9 +117,16 @@ def clock_in_dict(uvar_dict: dict, server_id: str, tracker_name: str, current_ti
         # Construct output
         result_list = [
             f"**Current Clock-ins:** {uvar_dict[server_id][tracker_name][3]}",
-            f"**Current All-time time: {calc_time(uvar_dict[server_id][tracker_name][4])}",
-            f"**Current All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}",
+            f"**Current All-time clock-ins:** {uvar_dict[server_id][tracker_name][5]}"
             ]
+
+        # If alltime is not 0
+        if (alltime_time := uvar_dict[server_id][tracker_name][4]) != 0:
+            result_list.insert(1, f"**Current All-time time:** {calc_time(uvar_dict[server_id][tracker_name][4])}")
+
+        # If alltime is 0
+        else:
+            pass
 
         # If time is not 0
         if (current_time := uvar_dict[server_id][tracker_name][2]) != 0:
@@ -131,10 +138,27 @@ def clock_in_dict(uvar_dict: dict, server_id: str, tracker_name: str, current_ti
         else:
             result_list.append(f"**Time Since Creation/Reset:** {calc_time(time_delta)}")
 
+        # If tracker is not dm_time
+        if tracker_name != "dm_time":
+            pass
+        
+        # If tracker is dm_time
+        else:
+            tracker_name = "DM Time"
+
         return f"`{tracker_name}` Tracker Has Been Started", "\n".join(result_list), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
 
     # If tracker is active
     else:
+
+        # If tracker is not dm_time
+        if tracker_name != "dm_time":
+            pass
+        
+        # If tracker is dm_time
+        else:
+            tracker_name = "DM Time"
+
         return "You Have Been Sneak Attacked by an Error", f"`{tracker_name}` is already active", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B" 
 
 
@@ -173,7 +197,7 @@ def main(input_list: list[str], prefix: str) -> tuple(str, str, str, str):
     else:
         uvar_dict = {
             server_id: {
-                dm_time: [False, current_time, 0, 0, 0, 0] 
+                "dm_time": [False, current_time, 0, 0, 0, 0] 
             }
         }
 
@@ -198,6 +222,14 @@ def main(input_list: list[str], prefix: str) -> tuple(str, str, str, str):
 
             # If more than one tracker found
             else:
+
+                # If there is only one active tracker (so that we guess which one we are trying to clock into)
+                if len((inactive_list := [tracker for tracker in search_result if not uvar_dict[server_id][tracker][0]])) == 1:
+                    return clock_in_dict(uvar_dict, server_id, inactive_list[0], current_time)
+
+                # If there are no active trackers or multiple active trackers
+                else:
+                    pass
 
                 # Iterate through all trackers
                 for result in search_result:
@@ -245,4 +277,4 @@ l = "<"
 -f "{{f}}"
 -thumb "{{thumb}}"
 -color "{{color}}"
--footer "{{prefix}}clock out {{l}}tracker name> | 12/16/23 | ShadowsStride"
+-footer "{{prefix}}clock in {{l}}tracker name> | 12/18/23 | ShadowsStride"
