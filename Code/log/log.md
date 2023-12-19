@@ -3,7 +3,8 @@
 Subalias that checks the time log of a tracker within a server
 
 ## Help:
-`clock log <tracker name>`
+`clock log <#/tracker name>`
 
 `<tracker name>` is an optional argument:
+- `#`: Page number
 - `tracker name`: Name of the tracker to check the time log, uses dm_time by default
