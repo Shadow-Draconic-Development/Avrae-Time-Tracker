@@ -28,100 +28,77 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def setup_time(name: str) -> list[str]:
-    """
-    Function to handle the creation of a tracker.
-    
-    Args:
-        name (str): Name of the counter
-    
-    Return:
-        (list[str]): Results
-    """
-
-    # Pulls and checks if uvar exists
-    all_server_test = get_uvar("clock_dict")
-
-    # If the uvar exists
-    if (all_server_test := get_uvar("clock_dict")):
-
-    # Tries to convert the uvar to a dictionary
-        try:
-            all_server_dict = load_json(all_server_test)
-
-        except:
-            return None, 'Problems loading dictionary'
-
-        # If the server id exists in the uvar, pulls dictionary of all trackers made within the server.
-        if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
-           pass
-
-        # If the server id does not exist, creates an entry for the server and a dm_time entry
-        else:
-            all_server_dict[server_id] = {"dm_time": [False, 0, 0, 0, 0, 0]}
-
-    # If the uvar does not exist
-    else:
-        all_server_test = dict(f"{ctx.server_id}": {"dm_time": [False, 0, 0, 0, 0, 0]})
-    
-    # If the tracker does not exist
-    if not (key_result := search_list(name, all_server_dict[server_id].keys())):
-        pass
-    
-    # Checks to see if an exact match is reached
-    else:
-        for key in key_result:
-
-            # If it is not an exact match
-            if name.lower() != key.lower():
-                pass
-
-            else:
-                return None, 'That tracker already exists'
-        
-    # Create dictionary with name as key, list as values
-    all_server_dict[server_id][name] = [False, 0, 0, 0, 0, 0]
-
-    # Update uvar
-    set_uvar('clock_dict', dump_json(all_server_dict))
-
-    return name, ""
-
-
-def main(input_list: list[str]) -> str:
+def main(input_list: list[str]) -> tuple(str, str, str, str):
     """
     Main program function
     
     Args:
-        input_list(list[str]): List of inputs
+        input_list(list[str]): List of user inputs
     
     Output:
-        str: Result
+        str: Title
+        str: Body content
+        str: Thumbnail URL
+        str: Color hex code
     """
 
-    # If there are no inputs
-    if len(input_list) == 0:
-        return f"{ctx.author.display_name} has encountered an error", "No tracker name given"
+    # Store server ID
+    server_id = ctx.guild.id
 
-    # If there is at least 1 input
+    # If there was at least one input
+    if len(input_list) > 0:
+
+        # If UVAR exists, load dictionary
+        if (uvar_test := get_uvar("clock_dict")):
+            uvar_dict = load_json(uvar_test)
+
+        # If UVAR does not exist, create dictionary
+        else:
+            uvar_dict = {
+                server_id: {
+                    "dm_time": [False, 0, 0, 0, 0, 0]
+                }
+            }
+
+    # If there were no inputs
     else:
-        name, f = setup_time(input_list[0])
+        return "You Have Been Sneak Attacked by an Error", "You must provide the name of a tracker to create", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
 
-    # If there was no error
-    if name:
-        return f"{ctx.author.display_name}: {name} tracker created", ""   
+    # If server exists
+    if server_id in uvar_dict.keys():
+        pass
 
-    # If there was an error
+    # If server does not exist
     else:
-        return f"{ctx.author.display_name} has encountered an error", f
+        uvar_dict[server_id] = {"dm_time": [False, 0, 0, 0, 0, 0]}
+
+    # For each tracker (within a server)
+    for tracker in uvar_dict[server_id].keys():
+
+        # If input does not equal existing tracker
+        if input_list[0].lower() != tracker.lower():
+            pass
+
+        # If input does equal existing tracker
+        else:
+            return "You Have Been Sneak Attacked by an Error", f"`{tracker}` tracker already exists", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
+
+    # Creates new tracker
+    uvar_dict[server_id][input_list[0]] = [False, 0, 0, 0, 0, 0]
+    
+    # Save UVAR
+    set_uvar('clock_dict', dump_json(uvar_dict))
+
+    return f"`{input_list[0]}` Tracker Has Been Created", "", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
 
 
 # Runs main program
-title, f = main(&ARGS&)
+title, f, thumb, color = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
--thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -f "{{f}}"
+-thumb "{{thumb}}"
+-color "{{color}}"
 -footer "!clock create [tracker name] | 12/16/23 | ShadowsStride"

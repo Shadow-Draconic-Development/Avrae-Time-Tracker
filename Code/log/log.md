@@ -1,9 +1,6 @@
 <h1>Log Subalias<img align="right" src="../../Data/main.png" width="100px"></h1>
 
-Subalias that checks the time log of a tracker on a server.
-
-## Owner(s):
-- ShadowsStride
+Subalias that checks the time log of a tracker within a server.
 
 ## Help:
 `clock log <tracker name>`

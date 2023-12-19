@@ -1,9 +1,6 @@
-<h1>Reset Subalias<img align="right" src="../main.png" width="100px"></h1>
+<h1>Reset Subalias<img align="right" src="../../Data/main.png" width="100px"></h1>
 
-Subalias that resets the time on a tracker on a server.
-
-## Owner(s):
-- ShadowsStride
+Subalias that resets the time for a tracker within a server.
 
 ## Help:
 `clock reset <tracker name>`

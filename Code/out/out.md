@@ -1,9 +1,6 @@
 <h1>Out Subalias<img align="right" src="../../Data/main.png" width="100px"></h1>
 
-Subalias that stops a tracker on a server.
-
-## Owner(s):
-- ShadowsStride
+Subalias that clocks out of a tracker within a server.
 
 ## Help:
 `clock out <tracker name>`

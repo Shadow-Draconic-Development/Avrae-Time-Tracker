@@ -28,77 +28,69 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def get_trackers() -> list[str]:
+def main() -> tuple(str, str, str, str):
     """
-    Gets the list of trackers for a player.
+    Main program function
 
     Return:
-        (list[str]): Result
+        str: Title
+        str: Body content
+        str: Thumbnail URL
+        str: Color hex code
     """
 
-    # If the uvar exists
-    if (all_server_test := get_uvar("clock_dict")):
-        pass
+    # If the UVAR exists, load dictionary
+    if (uvar_test := get_uvar("clock_dict")):
+        uvar_dict = load_json(uvar_test)
 
-    # If the uvar does not exist
+    # If the UVAR does not exist
     else:
-        return -1, 'UVAR `clock_dict` does not exist'
-    
-    # Tries to convert the uvar to a dictionary
-    try:
-        all_server_dict = load_json(all_server_test)
+        return "You Have Been Sneak Attacked by an Error", "UVAR `clock_dict` does not exist", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
 
-    except:
-        return -1, 'Problems loading dictionary'
+    # If the server exists
+    if (server_id := str(ctx.guild.id)) in uvar_dict.keys():
+        tracker_list = []
 
-    # If the server id is in the uvar
-    if (key_result := search_list(str(ctx.guild.id), all_server_dict.keys())):
+        # For each tracker
+        for tracker in uvar_dict[server_id].keys():
 
-        # Grabs tracker list, formats default tracker
-        key_list = [key if key != "dm_time" else "DM Time" for key in all_server_dict[key_result[0]].keys()]
+            # If it is not DM Time
+            if tracker != "dm_time":
+                tracker_name = tracker
 
-        # If there is something in the list
-        if len(key_list) != 0:
-            return "\n".join(key_list), ""
+            # If it is DM Time
+            else:
+                tracker_name = "DM Time"
 
-        # If there is not something in the list
+            # If active
+            if uvar_dict[server_id][tracker][0]:
+                tracker_list.append(f"{tracker_name}: **Active**\n")
+
+            # If inactive
+            else:
+                tracker_list.append(f"{tracker_name}: **Inactive**\n")
+
+        # If at least 1 tracker was added
+        if len(tracker_list) > 0:
+            pass
+
+        # If no trackers were added
         else:
-            return "None", ""
+            tracker_list.append("None")
 
-    # If the server id is not in the uvar
+        return "Current Time Trackers", "\n".join(tracker_list), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
+
+    # If the server does not exist
     else:
-        return 'None', ""
-
-    
-def main(input_list: list[str]) -> str:
-    """
-    Main program function.
-    
-    Args:
-        input_list(list[str]): List of user inputs
-    
-    Output:
-        str: Result
-    """
-
-    # Grabs tracker names, if any.
-    f, error = get_trackers()
-
-    # If there was no error
-    if f != -1:
-        return "Current time trackers", f, ""
-
-    # If there was an error
-    else:
-        return "You Have Been Sneak Attacked by an Error", error, "#CF142B"
+        return "Current Time Trackers", "None (No trackers have been created on this server)", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", ""
 
 
-title, f, color = main(&ARGS&)
+title, f, thumb, color = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
 -f "{{f}}"
+-thumb "{{thumb}}"
 -color "{{color}}"
--thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -footer "{{ctx.prefix}}clock list | 12/16/23 | ShadowsStride"

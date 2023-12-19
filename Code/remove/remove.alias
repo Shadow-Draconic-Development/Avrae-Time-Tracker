@@ -28,31 +28,98 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def delete_from_dict(key_result: str, all_server_dict: dict, server_id: str) -> None:
+def calc_time(time: int) -> str:
     """
-    Deletes entry from dict
+    Converts seconds into weeks, days, hours, minutes, seconds.
+    
+    Args:
+        time (int): Time in seconds
+
+    Return:
+        str: Time string
+    """
+
+    # Unit 
+    units = [
+        (604800, 'week', 'weeks'),
+        (86400, 'day', 'days'),
+        (3600, 'hour', 'hours'),
+        (60, 'minute', 'minutes'),
+        (1, 'second', 'seconds')
+    ]
+
+    result_list = []
+
+    # For each time unit
+    for unit_time, singular_label, plural_label in units:
+
+        # Floor division
+        unit_count = int(time // unit_time)
+
+        # Modular division
+        time %= unit_time
+
+        # If unit count is not 0, add to result_list with proper label
+        if unit_count > 0:
+            label = singular_label if unit_count == 1 else plural_label
+            result_list.append(f"{unit_count} {label}")
+
+        # If unit count is 0
+        else:
+            pass
+
+    return ", ".join(result_list) if result_list != [] else "0 seconds"
+
+
+def delete_from_dict(uvar_dict: dict, server_id: str, tracker_name: str) -> tuple(str, str, str, str):
+    """
+    Removes time tracker from UVAR dictionary
 
     Args:
         key_result (str): Tracker name
         all_server_dict (dict): Dictionary containing all trackers
-        server_id (str): Server ID    
+        server_id (str): Server ID
+
+    Return:
+        str: Title
+        str: Body content
+        str: Thumbnail URL
+        str: Color hex code
     """
 
-    # Turns off tracker and sets time to when it got turned off
-    all_server_dict[server_id][key_result][0] = False
-    all_server_dict[server_id][key_result][1] = int(time())
+    # Turns off tracker and sets time to when it got deleted
+    uvar_dict[server_id][tracker_name][0] = False
+    uvar_dict[server_id][tracker_name][1] = int(time())
+
+    # Construct output
+    result_list = [
+        f"**Final Time:** {calc_time(uvar_dict[server_id][tracker_name][2])}",
+        f"**Final Clock-ins:** {uvar_dict[server_id][tracker_name][3]}",
+        f"**Final All-time time: {calc_time(uvar_dict[server_id][tracker_name][4])}",
+        f"**Final All-time clock-ins: {uvar_dict[server_id][tracker_name][5]}"
+        ]
 
     # Setup backup_dict
-    set_uvar('clock_dict_backup', dump_json(all_server_dict))
+    set_uvar('clock_dict_backup', dump_json(uvar_dict))
 
     # Pop tracker
-    all_server_dict[server_id].pop(key_result)
+    uvar_dict[server_id].pop(tracker_name)
 
     # Setup main dict
-    set_uvar('clock_dict', dump_json(all_server_dict))
+    set_uvar('clock_dict', dump_json(uvar_dict))
+
+    # If tracker name is dm_time
+    if tracker_name == "dm_time":
+        tracker_name = "DM Time"
+
+    # If tracker name is not dm_time
+    else:
+        pass
+
+    return f"`{tracker_name}` Tracker Has Been Removed", "\n".join(result_list), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", "" 
 
 
-def main(input_list: list[str]) -> tuple(str, str, str):
+def main(input_list: list[str]) -> tuple(str, str, str, str):
     """
     Main program function
     
@@ -62,77 +129,68 @@ def main(input_list: list[str]) -> tuple(str, str, str):
     Return:
         str: Title
         str: Body content
+        str: Thumbnail URL
         str: Color hex code
     """
 
-    # If there is at least one input
+    # If there is at least one input, store server id
     if len(input_list) > 0:
         server_id = str(ctx.guild.id)
 
     # If there was no input
     else:
-        return "You Have Been Sneak Attacked by an Error", 'No tracker name given', "#CF142B"
+        return "You Have Been Sneak Attacked by an Error", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "No tracker name given", "#CF142B"
 
-    # If the UVAR exists
-    if (all_server_test := get_uvar('clock_dict')):
+    if (uvar_test := get_uvar('clock_dict')):
+        uvar_dict = load_json(uvar_test)
 
-        # Tries to convert the uvar to a dictionary
-        try:
-            all_server_dict = load_json(all_server_test)
-
-        except:
-            return "You Have Been Sneak Attacked by an Error", 'Problems loading dictionary', "#CF142B"
-
-    # If the UVAR does not exist
     else:
-        return "You Have Been Sneak Attacked by an Error", f"UVAR not found\nPlease run `{ctx.prefix}clock create [tracker name]` or `{ctx.prefix}clock in`", "#CF142B"
-    
-    # If the server id exists in the uvar, pulls dictionary of all trackers made within the server.
-    if (key_result := search_list(server_id, all_server_dict.keys())):
-        pass
+        return "You Have Been Sneak Attacked by an Error", "`clock_dict` UVAR does not exist", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
 
-    # If the server id does not exist, throws an error
-    else:
-        return "You Have Been Sneak Attacked by an Error", "You need to create a tracker on this server before you can remove one", "#CF142B"
+    # If server exists
+    if server_id in uvar_dict.keys():
 
-    # If it finds a tracker
-    if (key_result := search_list(input_list[0].lower(), all_server_dict[server_id].keys())):
+        # If it finds a tracker
+        if (search_result := search_list(input_list[0].lower(), uvar_dict[server_id].keys())):
 
-        # If it only has exactly 1 match, delete tracker
-        if len(key_result) == 1:
-            delete_from_dict(key_result[0], all_server_dict, server_id)
-            return f"`{key_result[0]}` Tracker Successfully Removed", "", ""
+            # If exactly one tracker found
+            if len(search_result) == 1:
+                return delete_from_dict(uvar_dict, server_id, search_result[0])
 
-        # If multiple matches
+            # If more than one tracker found
+            else:
+
+                # Iterate through all trackers
+                for result in search_result:
+
+                    # If not exact match
+                    if result.lower() != input_list[0].lower():
+                        pass
+
+                    # If exact match
+                    else:
+                        return delete_from_dict(uvar_dict, server_id, result)
+
+                search_result.insert(0, "**Multiple Trackers Found:**")
+
+                return "You Have Been Sneak Attacked by an Error", "\n".join(search_result), "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B"
+
+        # If tracker not found
         else:
+            return "You Have Been Sneak Attacked by an Error", f"Tracker not found (`{input_list[0]}`)", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/error.png", "#CF142B" 
 
-            # For each match, if it is not an exact match
-            for key in key_result:
-                if input_list[0].lower() != key.lower():
-                    pass
-
-                # If it finds an exact match, delete tracker
-                else:
-                    delete_from_dict(key, all_server_dict, server_id)
-                    return f"`{key}` Tracker Successfully Removed", "", ""
-
-            # If no exact match was made
-            key_result.insert(0, "**Multiple trackers found:**")
-            
-            return "You Have Been Sneak Attacked by an Error", "\n".join(key_result), "#CF142B"
-
-    # No matches
+    # If server does not exist
     else:
-        return "You Have Been Sneak Attacked by an Error", f"Tracker not found (`{input_list[0]}`)", "#CF142B"
-   
+        return "You Have Been Sneak Attacked by an Error", "You must first create a time tracker on this server", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png", "#CF142B"
+  
 
 # Runs main program
-title, f, color = main(&ARGS&)
+title, f, thumb, color = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
 -f "{{f}}"
+-thumb "{{thumb}}"
 -color "{{color}}"
--thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Time-Tracker/main/Data/main.png"
 -footer "{{ctx.prefix}}clock remove [tracker name] | 12/16/23 | ShadowsStride"

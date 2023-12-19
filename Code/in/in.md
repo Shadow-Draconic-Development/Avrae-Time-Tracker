@@ -1,9 +1,6 @@
 <h1>In Subalias<img align="right" src="../../Data/main.png" width="100px"></h1>
 
-Subalias that starts a tracker on a server.
-
-## Owner(s):
-- ShadowsStride
+Subalias that clocks in a tracker within a server.
 
 ## Help:
 `clock in <tracker name>`
