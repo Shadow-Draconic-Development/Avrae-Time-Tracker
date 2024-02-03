@@ -1,4 +1,4 @@
-<h1>Clock Alias<img align="right" src="./Data/main.png" width="100px"></h1>
+<h1>Time Tracker Alias<img align="right" src="./Data/main.png" width="100px"></h1>
 
 Table of contents within this content library.
 
