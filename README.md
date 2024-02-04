@@ -2,6 +2,8 @@
 Clock alias that allows players and DMs to keep track of various tasks. It's primary function is for DMs to keep track of the amount of time they have been DMing
 
 [Table of Contents](https://github.com/Shadow-Draconic-Development/Avrae-Time-Tracker/blob/main/ToC.md)
+[Shadow's Main Website](https://shadow-draconic-development.github.io/.github/)
+[Shadow's Discord Server](https://discord.gg/JqaH7Nbgmr)
 
 ## Latest Update Information (12/19/23):
 - Updated the UI and have migrated to a new GitHub account.
